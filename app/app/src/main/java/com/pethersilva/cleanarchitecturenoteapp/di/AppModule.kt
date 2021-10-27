@@ -2,22 +2,16 @@ package com.pethersilva.cleanarchitecturenoteapp.di
 
 import android.app.Application
 import androidx.room.Room
+import com.pethersilva.cleanarchitecturenoteapp.feature_note.data.data_source.NoteDao
 import com.pethersilva.cleanarchitecturenoteapp.feature_note.data.data_source.NoteDatabase
 import com.pethersilva.cleanarchitecturenoteapp.feature_note.data.repository.NoteRepositoryImpl
 import com.pethersilva.cleanarchitecturenoteapp.feature_note.domain.repository.NoteRepository
 import com.pethersilva.cleanarchitecturenoteapp.feature_note.domain.use_case.*
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AppModule {
+val noteModule = module {
 
-    @Provides
-    @Singleton
     fun provideNoteDatabase(app: Application): NoteDatabase {
         return Room.databaseBuilder(
             app,
@@ -26,14 +20,14 @@ object AppModule {
         ).build()
     }
 
-    @Provides
-    @Singleton
-    fun provideNoteRepository(db: NoteDatabase): NoteRepository{
-        return NoteRepositoryImpl(db.noteDao)
+    fun provideNoteDao(noteDatabase: NoteDatabase): NoteDao {
+        return noteDatabase.noteDao
     }
 
-    @Provides
-    @Singleton
+    fun provideNoteRepository(noteDao: NoteDao): NoteRepository {
+        return NoteRepositoryImpl(noteDao)
+    }
+
     fun provideNoteUseCases(repository: NoteRepository): NoteUseCases {
         return NoteUseCases(
             getNotesUseCase = GetNotesUseCase(repository),
@@ -42,4 +36,9 @@ object AppModule {
             deleteNoteUseCase = DeleteNoteUseCase(repository)
         )
     }
+
+    single { provideNoteDatabase(androidApplication()) }
+    single { provideNoteDao(noteDatabase = get()) }
+    single { provideNoteRepository(noteDao = get()) }
+    single { provideNoteUseCases(repository = get()) }
 }

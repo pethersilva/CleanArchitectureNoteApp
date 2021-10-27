@@ -2,7 +2,6 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -46,14 +45,16 @@ dependencies {
     //coroutines dependencies
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    implementation("androidx.room:room-ktx:2.3.0")
 
-    //Dagger - Hilt dependencies
-    implementation("com.google.dagger:hilt-android:2.38.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+    // Koin core features
+    implementation 'io.insert-koin:koin-core:3.1.2'
+    implementation 'io.insert-koin:koin-android:3.1.2'
+    implementation 'io.insert-koin:koin-android-compat:3.1.2'
 
     //Room Dependencies
     implementation("androidx.room:room-runtime:2.3.0")
-    annotationProcessor("androidx.room:room-compiler:2.3.0")
+    kapt("androidx.room:room-compiler:2.3.0")
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
